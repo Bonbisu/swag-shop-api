@@ -40,14 +40,18 @@ app.get('/product', function(req,res) {
 });
 
 app.get('/wishlist', function(req, res) {
-   WishList.find({}, function(err, wishLists) {
-       res.send(wishLists);
+   WishList.find({}).populate({path:'products', model:'Product'}).exec(function(err,wishLists) {
+       if (err) {
+           res.status(500).send({error: "Could not fetch wishlists"});
+       } else {
+           res.status(200).send(wishLists);
+       }
    });
 });
 
 app.post('/wishlist', function(req,res) {
    var wishList = new WishList();
-    wishList.title = req.body.title;
+    wishList.title = req.body.title;c
     
     wishList.save(function(err, newWishList) {
         if (err) {
@@ -67,7 +71,7 @@ app.put('/wishlist/product/add', function(req, res) {
               if (err) {
                   res.status(500).send({error: "Could not add item to wishlist"});
               } else {
-                  res.status(200).send(wishList);
+                  res.status(200).send("Succesfully added to wishlist");
               }
            });
        }
